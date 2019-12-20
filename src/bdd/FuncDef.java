@@ -3,9 +3,11 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class FuncDef {
-	Connexion conn  ;
+	private Connexion conn  ;
+	
+	
 	public FuncDef(Connexion conn) {
-		this.conn = conn;
+		this.conn = conn;	
 	}
 	
 	public void createTable() {
@@ -17,6 +19,9 @@ public class FuncDef {
 		try {
 			Statement stmt = conn.getCon().createStatement();
 				stmt.execute(sql);
+				ArrayList<ArrayList<String>> tbl = new ArrayList();
+				FuncDef func = new FuncDef(conn);
+				tbl = func.ReadFuncdep();
 				
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -28,18 +33,20 @@ public class FuncDef {
 	}
 	
 	
-	public boolean satisfaction(String lhs , String rhs) {
-		{
+	public  boolean satisfaction(String table) {
+		
+		
+		
 			
-		}
+		
 		return true;
 	}
 	
 	public ArrayList<ArrayList<String>> ReadFuncdep(){
 		ArrayList<ArrayList<String>> arr = new ArrayList();
 		try {
-			createTable();
-			String str = "SELECT * FROM FuncDef";
+			
+			String str = "SELECT * FROM FuncDep";
 			Statement stmt = conn.getCon().createStatement();
 			ResultSet result = stmt.executeQuery(str);
 			ResultSetMetaData rsd = result.getMetaData();
@@ -47,20 +54,35 @@ public class FuncDef {
 			while(result.next()) {
 				ArrayList<String> re = new ArrayList();
 				for(int i = 1;i <= nbcol;i++) {
-					String res = result.getString(i);
+					String res = result.getObject(i).toString();
 					re.add(res);
 				}
 				arr.add(re);
 			}
 		} catch (SQLException e) {
-			System.out.println("THE TABLE DOESN'T EXIST IN THE DATABASE");
+			
+			//System.out.println(e.getMessage());
 			//e.printStackTrace();
+			String sql = " CREATE TABLE IF NOT EXISTS FuncDep (\n"
+					+ "        table_name  text NOT NULL,\n"
+					+ "         lhs        text NOT NULL,\n"
+					+ "         rhs        text NOT NULL)";
+			
+			try {
+				Statement stmt = conn.getCon().createStatement();
+					stmt.execute(sql);
+					
+					
+			} catch (Exception e1) {
+				System.out.println(e1.getMessage());
+			}
+			
 		}
 		
 		return arr;
 		
 	}
-	
+	 
 	
 	
 }
