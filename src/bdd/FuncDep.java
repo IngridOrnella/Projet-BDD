@@ -2,11 +2,11 @@ package bdd;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class FuncDef {
+public class FuncDep {
 	private Connexion conn  ;
 	
 	
-	public FuncDef(Connexion conn) {
+	public FuncDep(Connexion conn) {
 		this.conn = conn;	
 	}
 	
@@ -35,33 +35,37 @@ public class FuncDef {
 	
 	
 	public  boolean satisfaction(String table, String lhs,String rhs) {
-		
+		boolean sas = true;
 		ArrayList<String> tab = new ArrayList<String>();
 		tab = conn.getNameAttributes(table);
 		String[] att = lhs.split(" ");
-		String ls ="SELECT ";
+		String ls ="";
 		for(int i =0; i<att.length; i++) {
 			if(i!= att.length - 1)
 			ls += att[i]+",";
 		}
-		String sql1 = ls+" FROM "+table;
+	
 		Statement stmt1 = null;
-		String sql2 = "SELECT "+rhs+" FROM "+table;
-		try {
-			stmt1 = conn.getCon().createStatement();
-			ResultSet result1 = stmt1.executeQuery(sql1);
-			ResultSetMetaData rsd1 = result1.getMetaData();
-			ResultSet result2 = stmt1.executeQuery(sql2);
-			ResultSetMetaData rsd2 = result2.getMetaData();
-			while(result1.next() && result2.next()) {
-				
-			}
-
-		} catch (SQLException e) {
+		ArrayList<ArrayList<String>> tplg = selectTuple(ls,table);
+		ArrayList<ArrayList<String>> tpld = selectTuple(rhs , table);
+		System.out.println("Dépendance non ssatisfaite 2");
+		for (int i=0 ; i<tplg.size(); i++) {
+			System.out.println("Dépendance non ssatisfaite 3");
+			ArrayList corr = new ArrayList();
+			corr = tpld.get(i);
+			for (int j=0; j<tplg.size(); j++) {
 			
-			e.printStackTrace();
-		}		
-		return true;
+				if(!tplg.get(j).equals(corr.get(i))) {
+					removeDf(table, lhs, rhs);
+					System.out.println("Dépendance non ssatisfaite");
+					sas = false;
+					return sas;
+				}
+			}
+			
+		}
+		System.out.println("Dépendance satisfaite");
+		return sas;
 	}
 	
 	public void removeDf(String table, String l,String r) {
@@ -118,25 +122,27 @@ public class FuncDef {
 		return arr;
 		
 	}
-	public ArrayList<ArrayList<String>> Select(String a, String table){
+	
+	public ArrayList<ArrayList<String>> selectTuple(String a, String table){
 		ArrayList<ArrayList<String>> tuple = new ArrayList<>();
-		String sql = "SELECT "+a+" FROM "+table;
+		String sql = "SELECT "+a+ " FROM " +table;
 		Statement stmt;
 		try {
 			stmt = conn.getCon().createStatement();
 			ResultSet result = stmt.executeQuery(sql);
 			ResultSetMetaData rs = result.getMetaData();
 			int nbcol = rs.getColumnCount();
-			while(result.next()) {
 			 ArrayList<String> a1 = new ArrayList<>();
+			while(result.next()) {
+			
 			 for (int i = 1; i<=nbcol; i++) {
 				 a1.add(result.getObject(i).toString());
 			 }
 			 tuple.add(a1);
 			 }
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(e.getMessage());
+			//e.printStackTrace();
 		}
 		return tuple;
 		}

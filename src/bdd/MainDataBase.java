@@ -14,7 +14,7 @@ public class MainDataBase {
 		String url = scan.nextLine();
 		Connexion connectt = new Connexion();
 		connectt.connect(url);
-		FuncDef func = new FuncDef(connectt);
+		FuncDep func = new FuncDep(connectt);
 		ArrayList<ArrayList<String>> arr = func.ReadFuncdep();
 		//System.out.println( "le contenu de FUNCDEP est le suivant: \n");
 		//System.out.println("[Table_name , lhs, rhs]");
@@ -22,6 +22,6 @@ public class MainDataBase {
 			System.out.println(i);
 		}
 		
+		func.satisfaction("AA", "A", "B");
 	}
-
 }

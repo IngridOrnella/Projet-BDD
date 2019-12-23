@@ -39,7 +39,7 @@ public class Connexion {
 		try {
 		ResultSet result = dbmd.getTables(null, null, null, new String[] {"table"});
 		while (result.next()) {
-			tableName.add(result.getString("NAME_TABLE"));
+			tableName.add(result.getString("TABLE_NAME"));
 			}
 		}catch(NullPointerException e) {
 			e.printStackTrace();
