@@ -82,7 +82,7 @@
             <classpath refid="run.Connexion.classpath"/>
         </java>
     </target>
-    <target name="MainDataBase">
+    <target name="run">
         <java classname="bdd.MainDataBase" failonerror="true" fork="yes">
             <classpath refid="run.MainDataBase.classpath"/>
         </java>
